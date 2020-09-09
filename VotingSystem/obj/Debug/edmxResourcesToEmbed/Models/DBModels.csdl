@@ -1,0 +1,91 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Schema Namespace="VotingDBModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+  <EntityType Name="Candidate">
+    <Key>
+      <PropertyRef Name="CandidateID" />
+    </Key>
+    <Property Name="CandidateID" Type="Int32" Nullable="false" />
+    <Property Name="CandidateNo" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+    <Property Name="CandidateName" Type="String" MaxLength="200" FixedLength="false" Unicode="false" />
+    <Property Name="Party_ID" Type="Int32" />
+    <Property Name="CandidateVoteCount" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <NavigationProperty Name="Party" Relationship="Self.FK_Candidate_Party" FromRole="Candidate" ToRole="Party" />
+    <NavigationProperty Name="Votes" Relationship="Self.FK_Vote_Candidate" FromRole="Candidate" ToRole="Vote" />
+  </EntityType>
+  <EntityType Name="Party">
+    <Key>
+      <PropertyRef Name="PartyID" />
+    </Key>
+    <Property Name="PartyID" Type="Int32" Nullable="false" />
+    <Property Name="PartyName" Type="String" MaxLength="200" FixedLength="false" Unicode="false" />
+    <Property Name="PartyVoteCount" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <NavigationProperty Name="Candidates" Relationship="Self.FK_Candidate_Party" FromRole="Party" ToRole="Candidate" />
+    <NavigationProperty Name="Votes" Relationship="Self.FK_Vote_Party" FromRole="Party" ToRole="Vote" />
+  </EntityType>
+  <EntityType Name="Vote">
+    <Key>
+      <PropertyRef Name="VoteID" />
+    </Key>
+    <Property Name="VoteID" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="Time" Type="Time" Precision="7" />
+    <Property Name="PollingDistrict" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+    <Property Name="PollingDivision" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+    <Property Name="Party_ID" Type="Int32" />
+    <Property Name="Candidate_ID" Type="Int32" />
+    <NavigationProperty Name="Candidate" Relationship="Self.FK_Vote_Candidate" FromRole="Vote" ToRole="Candidate" />
+    <NavigationProperty Name="Party" Relationship="Self.FK_Vote_Party" FromRole="Vote" ToRole="Party" />
+  </EntityType>
+  <Association Name="FK_Candidate_Party">
+    <End Role="Party" Type="Self.Party" Multiplicity="0..1" />
+    <End Role="Candidate" Type="Self.Candidate" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Party">
+        <PropertyRef Name="PartyID" />
+      </Principal>
+      <Dependent Role="Candidate">
+        <PropertyRef Name="Party_ID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_Vote_Candidate">
+    <End Role="Candidate" Type="Self.Candidate" Multiplicity="0..1" />
+    <End Role="Vote" Type="Self.Vote" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Candidate">
+        <PropertyRef Name="CandidateID" />
+      </Principal>
+      <Dependent Role="Vote">
+        <PropertyRef Name="Candidate_ID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_Vote_Party">
+    <End Role="Party" Type="Self.Party" Multiplicity="0..1" />
+    <End Role="Vote" Type="Self.Vote" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Party">
+        <PropertyRef Name="PartyID" />
+      </Principal>
+      <Dependent Role="Vote">
+        <PropertyRef Name="Party_ID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <EntityContainer Name="DBModel" annotation:LazyLoadingEnabled="true">
+    <EntitySet Name="Candidates" EntityType="Self.Candidate" />
+    <EntitySet Name="Parties" EntityType="Self.Party" />
+    <EntitySet Name="Votes" EntityType="Self.Vote" />
+    <AssociationSet Name="FK_Candidate_Party" Association="Self.FK_Candidate_Party">
+      <End Role="Party" EntitySet="Parties" />
+      <End Role="Candidate" EntitySet="Candidates" />
+    </AssociationSet>
+    <AssociationSet Name="FK_Vote_Candidate" Association="Self.FK_Vote_Candidate">
+      <End Role="Candidate" EntitySet="Candidates" />
+      <End Role="Vote" EntitySet="Votes" />
+    </AssociationSet>
+    <AssociationSet Name="FK_Vote_Party" Association="Self.FK_Vote_Party">
+      <End Role="Party" EntitySet="Parties" />
+      <End Role="Vote" EntitySet="Votes" />
+    </AssociationSet>
+  </EntityContainer>
+</Schema>

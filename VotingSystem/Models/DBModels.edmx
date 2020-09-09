@@ -1,0 +1,260 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+      <Schema Namespace="VotingDBModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="Candidate">
+          <Key>
+            <PropertyRef Name="CandidateID" />
+          </Key>
+          <Property Name="CandidateID" Type="int" Nullable="false" />
+          <Property Name="CandidateNo" Type="varchar" MaxLength="50" />
+          <Property Name="CandidateName" Type="varchar" MaxLength="200" />
+          <Property Name="Party_ID" Type="int" />
+          <Property Name="CandidateVoteCount" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Party">
+          <Key>
+            <PropertyRef Name="PartyID" />
+          </Key>
+          <Property Name="PartyID" Type="int" Nullable="false" />
+          <Property Name="PartyName" Type="varchar" MaxLength="200" />
+          <Property Name="PartyVoteCount" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Vote">
+          <Key>
+            <PropertyRef Name="VoteID" />
+          </Key>
+          <Property Name="VoteID" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Time" Type="time" Precision="7" />
+          <Property Name="PollingDistrict" Type="varchar" MaxLength="100" />
+          <Property Name="PollingDivision" Type="varchar" MaxLength="100" />
+          <Property Name="Party_ID" Type="int" />
+          <Property Name="Candidate_ID" Type="int" />
+        </EntityType>
+        <Association Name="FK_Candidate_Candidate">
+          <End Role="Candidate" Type="Self.Candidate" Multiplicity="1" />
+          <End Role="Candidate1" Type="Self.Candidate" Multiplicity="0..1" />
+          <ReferentialConstraint>
+            <Principal Role="Candidate">
+              <PropertyRef Name="CandidateID" />
+            </Principal>
+            <Dependent Role="Candidate1">
+              <PropertyRef Name="CandidateID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Candidate_Party">
+          <End Role="Party" Type="Self.Party" Multiplicity="0..1" />
+          <End Role="Candidate" Type="Self.Candidate" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Party">
+              <PropertyRef Name="PartyID" />
+            </Principal>
+            <Dependent Role="Candidate">
+              <PropertyRef Name="Party_ID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Vote_Candidate">
+          <End Role="Candidate" Type="Self.Candidate" Multiplicity="0..1" />
+          <End Role="Vote" Type="Self.Vote" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Candidate">
+              <PropertyRef Name="CandidateID" />
+            </Principal>
+            <Dependent Role="Vote">
+              <PropertyRef Name="Candidate_ID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Vote_Party">
+          <End Role="Party" Type="Self.Party" Multiplicity="0..1" />
+          <End Role="Vote" Type="Self.Vote" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Party">
+              <PropertyRef Name="PartyID" />
+            </Principal>
+            <Dependent Role="Vote">
+              <PropertyRef Name="Party_ID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="VotingDBModelStoreContainer">
+          <EntitySet Name="Candidate" EntityType="Self.Candidate" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Party" EntityType="Self.Party" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Vote" EntityType="Self.Vote" Schema="dbo" store:Type="Tables" />
+          <AssociationSet Name="FK_Candidate_Candidate" Association="Self.FK_Candidate_Candidate">
+            <End Role="Candidate" EntitySet="Candidate" />
+            <End Role="Candidate1" EntitySet="Candidate" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Candidate_Party" Association="Self.FK_Candidate_Party">
+            <End Role="Party" EntitySet="Party" />
+            <End Role="Candidate" EntitySet="Candidate" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Vote_Candidate" Association="Self.FK_Vote_Candidate">
+            <End Role="Candidate" EntitySet="Candidate" />
+            <End Role="Vote" EntitySet="Vote" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Vote_Party" Association="Self.FK_Vote_Party">
+            <End Role="Party" EntitySet="Party" />
+            <End Role="Vote" EntitySet="Vote" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema>
+    </edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="VotingDBModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityType Name="Candidate">
+          <Key>
+            <PropertyRef Name="CandidateID" />
+          </Key>
+          <Property Name="CandidateID" Type="Int32" Nullable="false" />
+          <Property Name="CandidateNo" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="CandidateName" Type="String" MaxLength="200" FixedLength="false" Unicode="false" />
+          <Property Name="Party_ID" Type="Int32" />
+          <Property Name="CandidateVoteCount" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <NavigationProperty Name="Party" Relationship="Self.FK_Candidate_Party" FromRole="Candidate" ToRole="Party" />
+          <NavigationProperty Name="Votes" Relationship="Self.FK_Vote_Candidate" FromRole="Candidate" ToRole="Vote" />
+        </EntityType>
+        <EntityType Name="Party">
+          <Key>
+            <PropertyRef Name="PartyID" />
+          </Key>
+          <Property Name="PartyID" Type="Int32" Nullable="false" />
+          <Property Name="PartyName" Type="String" MaxLength="200" FixedLength="false" Unicode="false" />
+          <Property Name="PartyVoteCount" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <NavigationProperty Name="Candidates" Relationship="Self.FK_Candidate_Party" FromRole="Party" ToRole="Candidate" />
+          <NavigationProperty Name="Votes" Relationship="Self.FK_Vote_Party" FromRole="Party" ToRole="Vote" />
+        </EntityType>
+        <EntityType Name="Vote">
+          <Key>
+            <PropertyRef Name="VoteID" />
+          </Key>
+          <Property Name="VoteID" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Time" Type="Time" Precision="7" />
+          <Property Name="PollingDistrict" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="PollingDivision" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="Party_ID" Type="Int32" />
+          <Property Name="Candidate_ID" Type="Int32" />
+          <NavigationProperty Name="Candidate" Relationship="Self.FK_Vote_Candidate" FromRole="Vote" ToRole="Candidate" />
+          <NavigationProperty Name="Party" Relationship="Self.FK_Vote_Party" FromRole="Vote" ToRole="Party" />
+        </EntityType>
+        <Association Name="FK_Candidate_Party">
+          <End Role="Party" Type="Self.Party" Multiplicity="0..1" />
+          <End Role="Candidate" Type="Self.Candidate" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Party">
+              <PropertyRef Name="PartyID" />
+            </Principal>
+            <Dependent Role="Candidate">
+              <PropertyRef Name="Party_ID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Vote_Candidate">
+          <End Role="Candidate" Type="Self.Candidate" Multiplicity="0..1" />
+          <End Role="Vote" Type="Self.Vote" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Candidate">
+              <PropertyRef Name="CandidateID" />
+            </Principal>
+            <Dependent Role="Vote">
+              <PropertyRef Name="Candidate_ID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Vote_Party">
+          <End Role="Party" Type="Self.Party" Multiplicity="0..1" />
+          <End Role="Vote" Type="Self.Vote" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Party">
+              <PropertyRef Name="PartyID" />
+            </Principal>
+            <Dependent Role="Vote">
+              <PropertyRef Name="Party_ID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="DBModel" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="Candidates" EntityType="Self.Candidate" />
+          <EntitySet Name="Parties" EntityType="Self.Party" />
+          <EntitySet Name="Votes" EntityType="Self.Vote" />
+          <AssociationSet Name="FK_Candidate_Party" Association="Self.FK_Candidate_Party">
+            <End Role="Party" EntitySet="Parties" />
+            <End Role="Candidate" EntitySet="Candidates" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Vote_Candidate" Association="Self.FK_Vote_Candidate">
+            <End Role="Candidate" EntitySet="Candidates" />
+            <End Role="Vote" EntitySet="Votes" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Vote_Party" Association="Self.FK_Vote_Party">
+            <End Role="Party" EntitySet="Parties" />
+            <End Role="Vote" EntitySet="Votes" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="VotingDBModelStoreContainer" CdmEntityContainer="DBModel">
+          <EntitySetMapping Name="Candidates">
+            <EntityTypeMapping TypeName="VotingDBModel.Candidate">
+              <MappingFragment StoreEntitySet="Candidate">
+                <ScalarProperty Name="CandidateID" ColumnName="CandidateID" />
+                <ScalarProperty Name="CandidateNo" ColumnName="CandidateNo" />
+                <ScalarProperty Name="CandidateName" ColumnName="CandidateName" />
+                <ScalarProperty Name="Party_ID" ColumnName="Party_ID" />
+                <ScalarProperty Name="CandidateVoteCount" ColumnName="CandidateVoteCount" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Parties">
+            <EntityTypeMapping TypeName="VotingDBModel.Party">
+              <MappingFragment StoreEntitySet="Party">
+                <ScalarProperty Name="PartyID" ColumnName="PartyID" />
+                <ScalarProperty Name="PartyName" ColumnName="PartyName" />
+                <ScalarProperty Name="PartyVoteCount" ColumnName="PartyVoteCount" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Votes">
+            <EntityTypeMapping TypeName="VotingDBModel.Vote">
+              <MappingFragment StoreEntitySet="Vote">
+                <ScalarProperty Name="VoteID" ColumnName="VoteID" />
+                <ScalarProperty Name="Time" ColumnName="Time" />
+                <ScalarProperty Name="PollingDistrict" ColumnName="PollingDistrict" />
+                <ScalarProperty Name="PollingDivision" ColumnName="PollingDivision" />
+                <ScalarProperty Name="Party_ID" ColumnName="Party_ID" />
+                <ScalarProperty Name="Candidate_ID" ColumnName="Candidate_ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="true" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
+        <DesignerProperty Name="UseLegacyProvider" Value="false" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="None" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>
